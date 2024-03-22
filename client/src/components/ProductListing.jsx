@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../styles/ProductListing.css'; // Import the CSS file
 import axios from 'axios';
 
@@ -9,10 +10,17 @@ const ProductListing = () => {
   const [filters, setFilters] = useState([]);
   const [sortingCriteria, setSortingCriteria] = useState('');
 
+  const navigate = useNavigate();
+
   const [viewMode, setViewMode] = useState('grid');
 
   const handleViewModeChange = (mode) => {
     setViewMode(mode);
+  };
+
+  const handleDetailsClick = (product) => {
+    // Navigate to the description page for the selected product
+    navigate(`/product/${product._id}`);
   };
 
   useEffect(() => {
@@ -21,7 +29,6 @@ const ProductListing = () => {
         try {
           const response = await axios.get('http://localhost:4000/api/products');
           if (response.status === 200) {
-            console.log(response.data);
             setProducts(response.data);
           } else {
             console.error('Failed to fetch products');
@@ -175,7 +182,7 @@ const ProductListing = () => {
                   <p>Price: ${product.price}</p>
                   <p>{product.color}</p>
                   <p>{product.productType}</p>
-                  <button onClick={() => handleAddToCart(product._id)}>Add to Cart</button>
+                  <button onClick={() => handleDetailsClick(product)}>Details</button>
                 </div>
               </div>
             ))}

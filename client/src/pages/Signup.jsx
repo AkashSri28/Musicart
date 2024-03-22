@@ -25,6 +25,9 @@ function Signup() {
       if (response.status === 201) {
         setSuccessMessage('Registration successful! Please log in.');
         setError('');
+
+        localStorage.setItem('user', response.data.user);
+        localStorage.setItem('token', response.data.token);
         // If response is successful, redirect to the product listing page
         navigate('/')
       }

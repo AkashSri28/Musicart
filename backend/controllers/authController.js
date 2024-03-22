@@ -28,10 +28,12 @@ const registerUser = async (req, res) => {
     // Save user to database
     await newUser.save();
 
-    res.status(201).json({ message: 'User registered successfully' });
+    // Generate JWT token
+    const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, { expiresIn: '3d' });
+
+    res.status(201).json({ message: 'User registered successfully', user: newUser, token: token });
   } catch (error) {
     // Handle errors
-    console.error('Error in user signup:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -39,6 +41,7 @@ const registerUser = async (req, res) => {
 // User login
 const loginUser = async (req, res) => {
   try {
+    //console.log(req.body)
     const { email, password } = req.body;
 
     // Find user by email
@@ -54,9 +57,9 @@ const loginUser = async (req, res) => {
     }
 
     // Generate JWT token
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '3d' });
 
-    res.status(200).json({ token });
+    res.status(200).json({ user: user, token: token });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });
