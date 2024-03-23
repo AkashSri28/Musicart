@@ -5,6 +5,7 @@ import Signup from './pages/Signup';
 import ProductListing from './components/ProductListing'
 import ProductDetails from './components/ProductDetails';
 import Login from './pages/Login';
+import Cart from './components/Cart';
  // Import your Signup component
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
             <Route path="/" element={<ProductListing/>} />
             <Route path="/signup" element={<Signup/>} />
             <Route path="/login" element={<Login/>} />
+            <Route path="/cart" element={<Cart/>} />
             <Route path="/product/:id" element={<ProductDetails/>} />
             
           </Routes>

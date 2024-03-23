@@ -5,7 +5,6 @@ const addToCart = async (req, res) => {
     try {
       // Extract product ID and user ID from the request body
       const { productId, userId } = req.body;
-      console.log(productId)
   
       // Check if the product is already in the user's cart
       let cart = await Cart.findOne({ user: userId });
@@ -40,5 +39,35 @@ const addToCart = async (req, res) => {
     }
   };
 
+  // Controller function to fetch user's cart data
+const getUserCart = async (req, res) => {
+    try {
+      // Get the user's ID from the request object
+      const userId = req.body.userId;
   
-  module.exports = {addToCart};
+      // Find the user's cart in the database
+      const cart = await Cart.findOne({ user: userId }).populate('products.product');
+  
+      if (!cart) {
+        return res.status(404).json({ message: 'Cart not found' });
+      }
+  
+      // Extract cart items and return them as a response
+      const cartItems = cart.products.map(item => ({
+        productId: item.product._id,
+        imageUrl: item.product.imageUrl,
+        productName: item.product.productName,
+        color: item.product.color,
+        price: item.product.price,
+        quantity: item.quantity
+      }));
+  
+      res.status(200).json(cartItems);
+    } catch (error) {
+      console.error('Error fetching cart data:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  };
+
+  
+  module.exports = {addToCart, getUserCart};

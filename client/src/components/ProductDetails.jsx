@@ -33,8 +33,6 @@ const ProductDetails = () => {
   const handleAddToCart = async () => {
     try {
       const userId = JSON.parse(localStorage.getItem('user'))._id;
-      console.log(productId);
-      console.log(userId)
       // Make a POST request to add the product to the user's cart
       const response = await axios.post('http://localhost:4000/api/cart/add', {
         productId, userId
