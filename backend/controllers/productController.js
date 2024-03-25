@@ -26,4 +26,37 @@ const getProductById = async (req, res)=>{
     }
 }
 
-module.exports = { getAllProducts, getProductById };
+const searchProducts = async (req, res) => {
+  try {
+    const { query } = req.query;
+    // Perform search operation based on the query
+    const searchResults = await Product.find({ productName: { $regex: query, $options: 'i' } });
+    res.status(200).json(searchResults);
+  } catch (error) {
+    console.error('Error searching products:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+const filterProducts = async (req, res) => {
+  try {
+    const { type, company, color, priceRange } = req.query;
+
+    // Construct filter object based on provided parameters
+    const filter = {};
+    if (type) filter.productType = type;
+    if (company) filter.company = company;
+    if (color) filter.color = color;
+    // Add logic for price range filtering if needed
+
+    // Perform the database query with the constructed filter
+    const filteredProducts = await Product.find(filter);
+
+    res.status(200).json(filteredProducts);
+  } catch (error) {
+    console.error('Error filtering products:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+module.exports = { getAllProducts, getProductById, searchProducts, filterProducts };

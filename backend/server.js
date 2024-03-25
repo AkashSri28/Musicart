@@ -23,7 +23,7 @@ mongoose.connect('mongodb+srv://sriakash2009:admin@cluster0.hbcyh4c.mongodb.net/
 .then(()=>{
     // Listen for requests
     app.listen(process.env.PORT, () => {
-    console.log(`Connected to DB, Sever is running on port ${process.env.PORT}}`);
+    console.log(`Connected to DB, Sever is running on port ${process.env.PORT}`);
     console.log(process.env.PORT);
   });
 })

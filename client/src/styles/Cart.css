@@ -1,18 +1,4 @@
 
-/* Top bar */
-.top-bar {
-  background-color: #f0f0f0;
-  padding: 10px;
-  text-align: center;
-}
-
-.phone-number {
-  margin-right: 20px;
-}
-
-.promotion {
-  font-weight: bold;
-}
 
 /* Content wrapper styles */
 .content-wrapper {
@@ -49,16 +35,6 @@
 .right-side {
   display: flex;
   align-items: center;
-}
-
-.view-cart-btn {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-right: 20px;
 }
 
 .profile-image {

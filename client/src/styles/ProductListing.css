@@ -17,13 +17,13 @@
   .product-grid {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: start;
   }
   
   .product-card {
-    border: 1px solid #ccc;
     border-radius: 5px;
     padding: 10px;
+    margin: 10px;
   }
 
 
@@ -56,28 +56,6 @@
 
   /* ProductListing.css */
 
-/* Top bar styles */
-.top-bar {
-  background-color: #f2f2f2; /* Background color */
-  padding: 10px; /* Padding */
-  display: flex; /* Use flexbox to align items */
-  justify-content: space-between; /* Space between items */
-  align-items: center; /* Center items vertically */
-}
-
-/* Phone number styles */
-.phone-number {
-  font-size: 14px; /* Font size */
-  color: #333; /* Text color */
-}
-
-/* Promotion styles */
-.promotion {
-  font-size: 16px; /* Font size */
-  font-weight: bold; /* Bold text */
-  color: #ff6600; /* Text color */
-}
-
 /* Content wrapper styles */
 .content-wrapper {
   width: 80%; /* 80% width for the content */
@@ -109,7 +87,7 @@
 /* View cart button styles */
 .view-cart-btn {
   padding: 8px 16px; /* Padding */
-  background-color: #007bff; /* Button background color */
+  background-color: #1D7000; /* Button background color */
   color: #fff; /* Text color */
   border: none; /* Remove border */
   border-radius: 5px; /* Border radius */

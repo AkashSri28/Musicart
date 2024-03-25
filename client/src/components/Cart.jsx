@@ -4,32 +4,13 @@ import '../styles/Cart.css'; // Import the CSS file
 import HorizontalBar from './HorizontalBar';
 import { useNavigate } from 'react-router-dom';
 import TopBar from './TopBar';
+import { useCart } from '../context/cartContext';
 
 const Cart = () => {
-  const [cartItems, setCartItems] = useState([]);
-  const userId = JSON.parse(localStorage.getItem('user'))._id;
+  const {cartItems} = useCart();
   
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Fetch cart items from backend API when component mounts
-    const fetchCartItems = async () => {
-      try {
-        const response = await axios.post('http://localhost:4000/api/cart',{ 
-          userId: userId
-        });
-        if (response.status === 200) {
-          setCartItems(response.data); // Assuming the backend returns an array of cart items
-        } else {
-          console.error('Failed to fetch cart items');
-        }
-      } catch (error) {
-        console.error('Error fetching cart items:', error);
-      }
-    };
-
-    fetchCartItems();
-  }, [userId]);
 
   const handleUpdateQuantity = (itemId, quantity) => {
     // Implement functionality to update quantity of an item in the cart

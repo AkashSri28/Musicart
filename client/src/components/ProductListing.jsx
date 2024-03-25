@@ -2,15 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/ProductListing.css'; // Import the CSS file
 import axios from 'axios';
+import TopBar from './TopBar';
+import { useAuth } from '../context/authContext';
+import { useCart } from '../context/cartContext';
 
 
 const ProductListing = () => {
-  const [products, setProducts] = useState([]);
+  // const [products, setProducts] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState([]);
   const [sortingCriteria, setSortingCriteria] = useState('');
+  const [filteredProducts, setFilteredProducts] = useState([]);
+
+  const [selectedType, setSelectedType] = useState('');
+  const [selectedCompany, setSelectedCompany] = useState('');
+  const [selectedColor, setSelectedColor] = useState('');
+  const [selectedPriceRange, setSelectedPriceRange] = useState('');
 
   const navigate = useNavigate();
+  const {isLoggedIn} = useAuth();
+  const { cartItems, addToCart } = useCart(); 
 
   const [viewMode, setViewMode] = useState('grid');
 
@@ -29,7 +40,8 @@ const ProductListing = () => {
         try {
           const response = await axios.get('http://localhost:4000/api/products');
           if (response.status === 200) {
-            setProducts(response.data);
+            // setProducts(response.data);
+            setFilteredProducts(response.data);
           } else {
             console.error('Failed to fetch products');
           }
@@ -41,9 +53,58 @@ const ProductListing = () => {
       fetchProducts();
   }, []);
 
-  const handleSearchChange = (event) => {
+  useEffect(() => {
+    // Fetch filtered products from the backend whenever the selected filters change
+    const fetchFilteredProducts = async () => {
+      try {
+        const response = await axios.get('http://localhost:4000/api/products/filter', {
+          params: {
+            type: selectedType,
+            company: selectedCompany,
+            color: selectedColor,
+            priceRange: selectedPriceRange
+          }
+        });
+        setFilteredProducts(response.data);
+      } catch (error) {
+        console.error('Error fetching filtered products:', error);
+      }
+    };
+
+    fetchFilteredProducts();
+  }, [selectedType, selectedCompany, selectedColor, selectedPriceRange]);
+
+  const handleTypeChange = (event) => {
+    setSelectedType(event.target.value);
+  };
+
+  const handleCompanyChange = (event) => {
+    setSelectedCompany(event.target.value);
+  };
+
+  const handleColorChange = (event) => {
+    setSelectedColor(event.target.value);
+  };
+
+  const handlePriceRangeChange = (event) => {
+    setSelectedPriceRange(event.target.value);
+  };
+
+  const handleSearchChange = async (event) => {
+    const searchTerm = event.target.value;
     setSearchQuery(event.target.value);
-    // Optionally, you can implement live search here
+    
+    //Search request to backend
+    try {
+      const response = await axios.get(`http://localhost:4000/api/products/search?query=${searchTerm}`);
+      if (response.status === 200) {
+        setFilteredProducts(response.data);
+      } else {
+        console.error('Failed to fetch search results');
+      }
+    } catch (error) {
+      console.error('Error searching products:', error);
+    }
   };
 
   // Define functions to handle filter and sorting changes
@@ -61,6 +122,16 @@ const ProductListing = () => {
     // Implement functionality to add product to cart
     // You may use context, redux, or other state management approaches to manage cart state
   };
+
+  const handleViewCart = () =>{
+    navigate('/cart');
+  }
+
+  // Options for filter dropdowns
+  const headphoneTypes = ['Type A', 'Type B', 'Type C'];
+  const companies = ['Company A', 'Company B', 'Company C'];
+  const colors = ['Red', 'Blue', 'Green', 'Yellow', 'Black', 'White', 'Purple', 'Orange', 'Brown', 'Gray', 'Pink', 'Cyan', 'Magenta'];
+  const priceRanges = ['Under $20', '$20 - $30', '$30 - $40', '$40 - $50', 'Over $50'];
 
   return (
     <div className="product-listing">
@@ -81,8 +152,12 @@ const ProductListing = () => {
           </div>
           {/* Right side */}
           <div className="right-side">
-            <button className="view-cart-btn">View Cart</button>
-            <img src="profile.jpg" alt="Profile" className="profile-image" />
+            {isLoggedIn && (
+              <>
+                <button className="view-cart-btn" onClick={handleViewCart}>View Cart {cartItems.length} </button>
+                <img src="profile.jpg" alt="Profile" className="profile-image" />
+              </>
+            )}
           </div>
         </div>
 
@@ -122,21 +197,31 @@ const ProductListing = () => {
 
           {/* Filter dropdowns */}
           <div className="filter-dropdowns">
-            <select className="filter-dropdown">
+            <select className="filter-dropdown" onChange={handleTypeChange}>
+
               <option value="">Headphone Type</option>
-              {/* Add options dynamically */}
+              {headphoneTypes.map((type, index) => (
+                <option key={index} value={type}>{type}</option>
+              ))}
+
             </select>
-            <select className="filter-dropdown">
+            <select className="filter-dropdown" onChange={handleCompanyChange}>
               <option value="">Company</option>
-              {/* Add options dynamically */}
+              {companies.map((type, index) => (
+                <option key={index} value={type}>{type}</option>
+              ))}
             </select>
-            <select className="filter-dropdown">
+            <select className="filter-dropdown" onChange={handleColorChange}>
               <option value="">Color</option>
-              {/* Add options dynamically */}
+              {colors.map((type, index) => (
+                <option key={index} value={type}>{type}</option>
+              ))}
             </select>
-            <select className="filter-dropdown">
+            <select className="filter-dropdown" onChange={handlePriceRangeChange}>
               <option value="">Price</option>
-              {/* Add options dynamically */}
+              {priceRanges.map((type, index) => (
+                <option key={index} value={type}>{type}</option>
+              ))}
             </select>
           </div>
 
@@ -156,7 +241,7 @@ const ProductListing = () => {
           {/* For grid view */}
           {viewMode === 'grid' && (
             <div className="product-grid">
-              {products.map((product) => (
+              {filteredProducts.map((product) => (
               <div key={product.id} className="product-card">
                 <img src={product.imageUrl} alt={product.productName} />
                 <div className="product-details">
@@ -174,7 +259,7 @@ const ProductListing = () => {
           {/* For list view */}
           {viewMode === 'list' && (
             <div className="product-list">
-              {products.map((product) => (
+              {filteredProducts.map((product) => (
               <div key={product.id} className="product-card">
                 <img src={product.imageUrl} alt={product.productName} />
                 <div className="product-details">
