@@ -4,12 +4,40 @@ const Product = require('../models/ProductModel');
 const getAllProducts = async (req, res) => {
   try {
     const products = await Product.find();
-    res.json(products);
+    res.status(200).json(products);
   } catch (error) {
     console.error('Error fetching products:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+const sortProducts = async (req, res) => {
+  const { criteria } = req.query;
+
+  try {
+    let products;
+
+    // Apply sorting based on the criteria
+    if (criteria === 'priceLowest') {
+      products = await Product.find().sort({ price: 1 });
+    } else if (criteria === 'priceHighest') {
+      products = await Product.find().sort({ price: -1 });
+    } else if (criteria === 'nameAZ') {
+      products = await Product.find().sort({ productName: 1 });
+    } else if (criteria === 'nameZA') {
+      products = await Product.find().sort({ productName: -1 });
+    } else {
+      // Default behavior if no criteria is provided
+      products = await Product.find();
+    }
+
+    res.status(200).json(products);
+  } catch (error) {
+    console.error('Error sorting products:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
 
 const getProductById = async (req, res)=>{
     try {
@@ -59,4 +87,4 @@ const filterProducts = async (req, res) => {
   }
 }
 
-module.exports = { getAllProducts, getProductById, searchProducts, filterProducts };
+module.exports = { getAllProducts, getProductById, searchProducts, filterProducts, sortProducts };

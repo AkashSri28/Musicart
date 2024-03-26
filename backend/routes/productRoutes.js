@@ -1,9 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const {getAllProducts, getProductById, searchProducts, filterProducts} = require('../controllers/productController');
+const {getAllProducts, getProductById, searchProducts, filterProducts, sortProducts} = require('../controllers/productController');
 
 // Route to handle GET request for fetching all products
 router.get('/', getAllProducts);
+
+// GET route to sort products
+router.get('/sort', sortProducts);
 
 // Route for product search
 router.get('/search', searchProducts);

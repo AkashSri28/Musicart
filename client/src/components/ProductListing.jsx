@@ -5,6 +5,7 @@ import axios from 'axios';
 import TopBar from './TopBar';
 import { useAuth } from '../context/authContext';
 import { useCart } from '../context/cartContext';
+import SortDropdown from './SortDropdown';
 
 
 const ProductListing = () => {
@@ -12,6 +13,7 @@ const ProductListing = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState([]);
   const [sortingCriteria, setSortingCriteria] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [filteredProducts, setFilteredProducts] = useState([]);
 
   const [selectedType, setSelectedType] = useState('');
@@ -20,7 +22,7 @@ const ProductListing = () => {
   const [selectedPriceRange, setSelectedPriceRange] = useState('');
 
   const navigate = useNavigate();
-  const {isLoggedIn} = useAuth();
+  const {isLoggedIn, user, logout} = useAuth();
   const { cartItems, addToCart } = useCart(); 
 
   const [viewMode, setViewMode] = useState('grid');
@@ -107,15 +109,24 @@ const ProductListing = () => {
     }
   };
 
-  // Define functions to handle filter and sorting changes
-  const handleFilterChange = (selectedFilters) => {
-    setFilters(selectedFilters);
-    // Apply filters to products list
-  };
+  // // Define functions to handle filter and sorting changes
+  // const handleFilterChange = (selectedFilters) => {
+  //   setFilters(selectedFilters);
+  //   // Apply filters to products list
+  // };
 
-  const handleSortingChange = (criteria) => {
+  const handleSortingChange = async (criteria) => {
     setSortingCriteria(criteria);
-    // Apply sorting criteria to products list
+    try {
+      const response = await axios.get(`http://localhost:4000/api/products/sort?criteria=${criteria}`);
+      if (response.status === 200) {
+        setFilteredProducts(response.data);
+      } else {
+        console.error('Failed to fetch sorted products');
+      }
+    } catch (error) {
+      console.error('Error fetching sorted products:', error);
+    }
   };
 
   const handleAddToCart = (productId) => {
@@ -132,6 +143,21 @@ const ProductListing = () => {
   const companies = ['Company A', 'Company B', 'Company C'];
   const colors = ['Red', 'Blue', 'Green', 'Yellow', 'Black', 'White', 'Purple', 'Orange', 'Brown', 'Gray', 'Pink', 'Cyan', 'Magenta'];
   const priceRanges = ['Under $20', '$20 - $30', '$30 - $40', '$40 - $50', 'Over $50'];
+
+   // Function to get user's initials
+   const getUserInitials = () => {
+    if (user && user.name) {
+      const [firstName, lastName] = user.name.split(' ');
+      return `${firstName.charAt(0)}${lastName ? lastName.charAt(0) : ''}`;
+    }
+    return '';
+  };
+
+  // Function to handle logout
+  const handleLogout = () => {
+    logout(); 
+    navigate('/login'); 
+  };
 
   return (
     <div className="product-listing">
@@ -155,7 +181,17 @@ const ProductListing = () => {
             {isLoggedIn && (
               <>
                 <button className="view-cart-btn" onClick={handleViewCart}>View Cart {cartItems.length} </button>
-                <img src="profile.jpg" alt="Profile" className="profile-image" />
+                
+                {/* User profile button */}
+                <button className="profile-button" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+                  {!isDropdownOpen && getUserInitials()}
+                  {isDropdownOpen && (
+                    <div className="dropdown-content">
+                      <p>{user.name}</p> {/* Full name */}
+                      <button onClick={handleLogout}>Logout</button> {/* Logout button */}
+                    </div>
+                  )}
+                </button>
               </>
             )}
           </div>
@@ -226,13 +262,7 @@ const ProductListing = () => {
           </div>
 
           {/* Sort by dropdown */}
-          <div className="sort-dropdowns">
-            <select className="sort-dropdown">
-              <option value="">Sort by</option>
-              <option value="featured">Featured</option>
-              <option value="price">Price</option>
-            </select>
-          </div>
+          <SortDropdown onSortingChange={handleSortingChange}/>
         </div>
 
 

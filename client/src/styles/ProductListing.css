@@ -109,11 +109,11 @@
 }
 
 .search-container {
-  width: 100%;
+  width: auto;
 }
 
-.search-input {
-  width: 100%;
+.search-container .search-input {
+  width: 98%;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 20px;
